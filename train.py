@@ -155,7 +155,8 @@ class LR_Model(object):
                 B = (img[i-self.wsize2:i+self.wsize2+1,j-self.wsize2:j+self.wsize2+1,2].reshape(1,-1) - avg_img[2])//std_img[2]
                 feature = np.append(R,[G,B]).reshape(1,-1)
                 #get mask of predictions
-                mask_img[i,j] = self.predict(feature)
+                predictions = self.predict(feature)
+                mask_img[i,j] = predictions[0,1]
         threshold = 0.95
         idx = mask_img[:,:] > threshold
         mask_img[idx] = threshold
