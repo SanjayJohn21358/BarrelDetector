@@ -88,7 +88,7 @@ class LR_Model(object):
         self.bias += self.lr*np.mean(gradient,axis=0)
         return predictions
 
-        
+    """
     def train(self,dataset):
         '''
             Train a multi-class classifier with Logistic Regression
@@ -125,7 +125,7 @@ class LR_Model(object):
                 previous_cost = new_cost
             else:
                 return None
-
+    """
 
     def decision_boundary(self,prob):
         prob = prob.reshape(3)

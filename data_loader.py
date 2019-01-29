@@ -1,6 +1,6 @@
 import os
 import cv2
-from roipoly import RoiPoly
+#from roipoly import RoiPoly
 from matplotlib import pyplot as plt
 from matplotlib.widgets import Button
 import numpy as np
