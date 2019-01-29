@@ -8,6 +8,7 @@ import matplotlib.patches as patches
 import numpy as np
 import pickle
 import math
+#comment out data_loader for autograder
 from data_loader import data_loader
 
 class LR_Model(object):
@@ -26,8 +27,8 @@ class LR_Model(object):
         self.lr = 0.05 #learning rate
         self.iters = 3000 #no. of iterations
         self.cost_log = [] #cost log to be graphed later
-        self.weights = np.random.rand(3*(self.wsize**2),3) #model weights
-        self.bias = np.random.rand(1,3) #model bias
+        self.weights = np.zeros([3*(self.wsize**2),3]) #model weights
+        self.bias = np.zeros([1,3]) #model bias
 
 
     @staticmethod    
@@ -88,25 +89,27 @@ class LR_Model(object):
         self.bias += self.lr*np.mean(gradient,axis=0)
         return predictions
 
-    """
+    '''
     def train(self,dataset):
-        '''
+        
             Train a multi-class classifier with Logistic Regression
             Inputs:
                 training_set - generator for training samples from dataloader class
             Outputs:
                 None
-        '''
+        
         features,labels = dataset.generate(self.wsize2,self.stride)
         features = features.reshape(-1,(self.wsize**2)*3)
         N = len(features)
         labels = labels.reshape(-1,3)
         #make validation set
+        
         split = int(N*0.9)
         validation_features = features[split:,:]
         validation_labels = labels[split:,:]
-        features = features[:split,:]
-        labels = labels[:split,:]
+        #features = features[:split,:]
+        #labels = labels[:split,:]
+        
         previous_cost = 1000
         new_cost = 0
         print('Created training set!')
@@ -116,23 +119,18 @@ class LR_Model(object):
             #Calculate error
             cost = self.cost_function(prediction,labels)
             #Log Progress
-            self.cost_log.append(cost+0.0)
+            if i%5 == 0:
+                self.cost_log.append(cost+0.0)
             print("iter: "+str(i) + " cost: "+str(cost))
             #validate
+            
             prediction = self.predict(validation_features)
             new_cost = self.cost_function(prediction,validation_labels)
             if new_cost < previous_cost:
                 previous_cost = new_cost
             else:
                 return None
-    """
-
-    def decision_boundary(self,prob):
-        prob = prob.reshape(3)
-        if prob[1] > 0.95:
-            return 1
-        else:
-            return 0
+    '''
 
     def test(self,img):
         '''
@@ -157,7 +155,10 @@ class LR_Model(object):
                 B = (img[i-self.wsize2:i+self.wsize2+1,j-self.wsize2:j+self.wsize2+1,2].reshape(1,-1) - avg_img[2])//std_img[2]
                 feature = np.append(R,[G,B]).reshape(1,-1)
                 #get mask of predictions
-                mask_img[i,j] = self.decision_boundary(self.predict(feature))
+                mask_img[i,j] = self.predict(feature)
+        threshold = 0.95
+        idx = mask_img[:,:] > threshold
+        mask_img[idx] = threshold
         mask_img = mask_img.astype(int)
         return mask_img
     
@@ -173,7 +174,7 @@ class LR_Model(object):
             parameters = pickle.load(f)
         self.weights = parameters[0]
         self.bias = parameters[1]
-"""
+
 #make training set by drawing boxes
 folder = "trainset"
 dataset = data_loader()
@@ -193,4 +194,4 @@ if maketrain == 'Y':
     plt.xlabel('iterations')
     plt.ylabel('Cost')
     plt.show()
-"""
+

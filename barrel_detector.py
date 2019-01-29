@@ -101,22 +101,20 @@ class BarrelDetector(object):
 
 
 if __name__ == '__main__':
-	testfolder = "testset"
-	trainfolder = "trainset"
+	folder = "trainset"
 	my_detector = BarrelDetector()
 
-	for filename in os.listdir(testfolder):
+	for filename in os.listdir(folder):
 		# read one test image
-		img = cv2.imread(os.path.join(testfolder,filename))
-		#cv2.imshow('image', img)
-		#cv2.waitKey(0)
-		#cv2.destroyAllWindows()
+		img = cv2.imread(os.path.join(folder,filename))
+		cv2.imshow('image', img)
+		cv2.waitKey(0)
+		cv2.destroyAllWindows()
 
 		#Display results:
 		#(1) Segmented images
-		#mask_img = my_detector.segment_image(img)
-		#(2) Barrel bounding box
-		
+		mask_img = my_detector.segment_image(img)
+		#(2) Barrel bounding box		
 		boxes = my_detector.get_bounding_box(img)
 		#The autograder checks your answers to the functions segment_image() and get_bounding_box()
 		#Make sure your code runs as expected on the testset before submitting to Gradescope
