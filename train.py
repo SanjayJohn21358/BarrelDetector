@@ -9,7 +9,7 @@ import numpy as np
 import pickle
 import math
 #comment out data_loader for autograder
-from data_loader import data_loader
+#from data_loader import data_loader
 
 class LR_Model(object):
 
@@ -175,6 +175,7 @@ class LR_Model(object):
         self.weights = parameters[0]
         self.bias = parameters[1]
 
+'''
 #make training set by drawing boxes
 folder = "trainset"
 dataset = data_loader()
@@ -194,4 +195,4 @@ if maketrain == 'Y':
     plt.xlabel('iterations')
     plt.ylabel('Cost')
     plt.show()
-
+'''
