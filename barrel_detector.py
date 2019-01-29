@@ -107,9 +107,9 @@ if __name__ == '__main__':
 	for filename in os.listdir(folder):
 		# read one test image
 		img = cv2.imread(os.path.join(folder,filename))
-		cv2.imshow('image', img)
-		cv2.waitKey(0)
-		cv2.destroyAllWindows()
+		#cv2.imshow('image', img)
+		#cv2.waitKey(0)
+		#cv2.destroyAllWindows()
 
 		#Display results:
 		#(1) Segmented images
