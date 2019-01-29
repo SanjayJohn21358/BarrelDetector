@@ -174,7 +174,7 @@ class LR_Model(object):
             parameters = pickle.load(f)
         self.weights = parameters[0]
         self.bias = parameters[1]
-
+"""
 #make training set by drawing boxes
 folder = "trainset"
 dataset = data_loader()
@@ -194,4 +194,4 @@ if maketrain == 'Y':
     plt.xlabel('iterations')
     plt.ylabel('Cost')
     plt.show()
-
+"""
