@@ -3,7 +3,6 @@ import os
 import cv2
 from skimage.measure import label, regionprops
 from skimage import data, util
-from roipoly import RoiPoly
 from matplotlib import pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
@@ -17,7 +16,7 @@ class LR_Model(object):
         '''
             initialize logistic regression model
             Inputs:
-				wsize - window size
+                wsize - window size
                 stride - stride length
                 lr - learning rate
         '''

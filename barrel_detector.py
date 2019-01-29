@@ -8,7 +8,6 @@ import cv2
 from skimage.measure import label, regionprops
 from skimage import data, util, img_as_ubyte
 from skimage.morphology import erosion, dilation, opening, closing, square
-from roipoly import RoiPoly
 from matplotlib import pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
