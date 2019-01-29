@@ -13,7 +13,7 @@ from data_loader import data_loader
 
 class LR_Model(object):
 
-    def __init__(self,wsize,stride,lr=0.0001):
+    def __init__(self):
         '''
             initialize logistic regression model
             Inputs:
@@ -21,14 +21,14 @@ class LR_Model(object):
                 stride - stride length
                 lr - learning rate
         '''
-        self.wsize = wsize #window size
-        self.wsize2 = wsize//2
-        self.stride = stride #strides
-        self.lr = lr #learning rate
-        self.iters = 5 #no. of iterations
+        self.wsize = 15 #window size
+        self.wsize2 = self.wsize//2
+        self.stride = 9 #strides
+        self.lr = 0.05 #learning rate
+        self.iters = 3000 #no. of iterations
         self.cost_log = [] #cost log to be graphed later
-        self.weights = np.random.rand(3) #model weights
-        self.bias = np.random.rand(1) #model bias
+        self.weights = np.random.rand(3*(self.wsize**2),3) #model weights
+        self.bias = np.random.rand(1,3) #model bias
 
 
     @staticmethod    
@@ -37,6 +37,14 @@ class LR_Model(object):
             compute sigmoid
         '''
         return 1/(1+np.exp(-z))
+
+    @staticmethod
+    def softmax(z):
+        '''
+            compute softmax (for multi-class)
+        '''
+        z = np.exp(z - np.max(z,axis=1).reshape(-1,1))
+        return z/np.sum(z,axis=1).reshape(-1,1)
 
     def predict(self,features):
         '''
@@ -48,7 +56,8 @@ class LR_Model(object):
 				predictions - sigmoid of dot product of features with weights
         '''
         z = np.dot(features, self.weights) + self.bias
-        return self.sigmoid(z)
+        #return self.sigmoid(z) (for binary)
+        return self.softmax(z)
 
     def cost_function(self, predictions, labels):
         '''
@@ -60,7 +69,7 @@ class LR_Model(object):
                 cost - float value of cost
         '''
         #Take the error when label=1
-        cost = -labels*np.log(predictions+0.00001) - (1-labels)*np.log(1-predictions+0.00001)
+        cost = -np.mean(labels*np.log(predictions+0.00001))
         return cost
 
     def update_weights(self, features, labels):
@@ -75,33 +84,56 @@ class LR_Model(object):
         N = len(features)
         predictions = self.predict(features) #sigmoidal function
         gradient = labels - predictions
-        #5 - Subtract from our weights to minimize cost
-        self.weights += self.lr*gradient*np.transpose(features)
-        self.bias += self.lr*gradient
+        #subtract from our weights to minimize cost
+        self.weights += (self.lr/N)*(np.dot(np.transpose(features),gradient))
+        self.bias += self.lr*np.mean(gradient,axis=0)
         return predictions
+
         
-    def train(self, training_set):
+    def train(self,dataset):
         '''
-            Train a binary classifier with Logistic Regression
+            Train a multi-class classifier with Logistic Regression
             Inputs:
-                training_set - generator for training sampels from dataloader class
+                training_set - generator for training samples from dataloader class
             Outputs:
                 None
         '''
-        for i in range(self.iters):
-            j = 0
-            for feature,label in training_set.generate(self.wsize2,self.stride):
-                #update weights
-                prediction = self.update_weights(feature, label)
-                #Calculate error
-                j+=1
-                cost = self.cost_function(prediction,label)
+        features,labels = dataset.generate(self.wsize2,self.stride)
+        features = features.reshape(-1,(self.wsize**2)*3)
+        N = len(features)
+        labels = labels.reshape(-1,3)
+        #make validation set
+        split = int(N*0.9)
+        validation_features = features[split:,:]
+        validation_labels = labels[split:,:]
+        features = features[:split,:]
+        labels = labels[:split,:]
+        previous_cost = 1000
+        new_cost = 0
+        print('Created training set!')
+        for i in range(1,self.iters):
+            #update weights
+            prediction = self.update_weights(features, labels)
+            #Calculate error
+            cost = self.cost_function(prediction,labels)
             #Log Progress
-            self.cost_log.append((cost+0.0)/j)
+            self.cost_log.append(cost+0.0)
             print("iter: "+str(i) + " cost: "+str(cost))
+            #validate
+            prediction = self.predict(validation_features)
+            new_cost = self.cost_function(prediction,validation_labels)
+            if new_cost < previous_cost:
+                previous_cost = new_cost
+            else:
+                return None
+
 
     def decision_boundary(self,prob):
-        return 1 if prob >= 0.5 else 0
+        prob = prob.reshape(3)
+        if prob[1] > 0.95:
+            return 1
+        else:
+            return 0
 
     def test(self,img):
         '''
@@ -118,11 +150,13 @@ class LR_Model(object):
         [x,y,z] = img.shape
         mask_img = np.zeros([x,y])
         #slide window, take average of window as feature vector
-        for i in range(x):
-            for j in range(y):
-                feature = img[i,j,:]
-                #standardize
-                feature = (img[i,j,:] - avg_img)/std_img
+        for i in range(self.wsize2,img.shape[0]-self.wsize2):
+            for j in range(self.wsize2,img.shape[1]-self.wsize2):
+                #take standardized window to be feature vector
+                R = (img[i-self.wsize2:i+self.wsize2+1,j-self.wsize2:j+self.wsize2+1,0].reshape(1,-1) - avg_img[0])//std_img[0]
+                G = (img[i-self.wsize2:i+self.wsize2+1,j-self.wsize2:j+self.wsize2+1,1].reshape(1,-1) - avg_img[1])//std_img[1]
+                B = (img[i-self.wsize2:i+self.wsize2+1,j-self.wsize2:j+self.wsize2+1,2].reshape(1,-1) - avg_img[2])//std_img[2]
+                feature = np.append(R,[G,B]).reshape(1,-1)
                 #get mask of predictions
                 mask_img[i,j] = self.decision_boundary(self.predict(feature))
         mask_img = mask_img.astype(int)
@@ -141,15 +175,13 @@ class LR_Model(object):
         self.weights = parameters[0]
         self.bias = parameters[1]
 
-wsize = 10
-stride = 4
 #make training set by drawing boxes
 folder = "trainset"
 dataset = data_loader()
-makedata = input('make a dataset? Y/N: ')
+makedata = input('draw regions? Y/N: ')
 if makedata == 'Y':
-    dataset.save_masks(folder)
-model = LR_Model(wsize,stride,lr=0.0001)
+    dataset.save_masks(folder)   
+model = LR_Model()
 #Train by opening dataset and running Logistic Regression
 maketrain = input('train? Y/N: ')
 if maketrain == 'Y':

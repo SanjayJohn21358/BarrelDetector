@@ -7,7 +7,7 @@ import os
 import cv2
 from skimage.measure import label, regionprops
 from skimage import data, util, img_as_ubyte
-from skimage.morphology import erosion, dilation, opening, closing, disk
+from skimage.morphology import erosion, dilation, opening, closing, square
 from roipoly import RoiPoly
 from matplotlib import pyplot as plt
 import matplotlib.patches as patches
@@ -17,14 +17,11 @@ import math
 import train
 
 class BarrelDetector(object):
-	def __init__(self,wsize,stride,lr=0.0001):
+	def __init__(self):
 		'''
 			Initialize your blue barrel detector with the attributes you need
 			eg. parameters of your classifier
 		'''
-		self.wsize = wsize
-		self.stride = stride
-		self.lr = lr
 		
 	def segment_image(self, img):
 		'''
@@ -39,9 +36,11 @@ class BarrelDetector(object):
 		'''
 		#use model to find blue parts of image
 		img2 = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
-		model = train.LR_Model(self.wsize,self.stride,self.lr)
+		model = train.LR_Model()
 		model.load('weights.pickle')
 		mask_img = model.test(img)
+		selem = square(4)
+		mask_img = closing(mask_img,selem=selem)
 		img2 = np.ones(img.shape)
 		#show mask
 		img2[:,:,0] = img2[:,:,0]*mask_img
@@ -69,8 +68,6 @@ class BarrelDetector(object):
 		boxes = []
 		binary_img = self.segment_image(img)
 		#clean up image
-		selem = disk(2)
-		binary_img = erosion(binary_img,selem=selem)
 		#find connected components
 		contours, hierarchy = cv2.findContours(binary_img, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)		
         #iterate through all the top-level contours,
@@ -107,7 +104,7 @@ class BarrelDetector(object):
 if __name__ == '__main__':
 	testfolder = "testset"
 	trainfolder = "trainset"
-	my_detector = BarrelDetector(10,4)
+	my_detector = BarrelDetector()
 
 	for filename in os.listdir(testfolder):
 		# read one test image

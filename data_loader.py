@@ -121,6 +121,7 @@ class data_loader(object):
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 #let user draw box, store ROI
                 mask = self.draw_box(img)
+                mask = np.clip(mask,0,2)
                 mask = mask.astype(int)
                 masks.append(mask)
                 filenames.append(os.path.join(folder,filename))
@@ -143,6 +144,8 @@ class data_loader(object):
             data = pickle.load(f)
         masks = data[0]
         filenames = data[1]
+        features = []
+        labels = []
         #for each training image, pull out features and labels
         for (index,filename) in enumerate(filenames):
             mask = masks[index]
@@ -152,26 +155,23 @@ class data_loader(object):
             #to be used for standardizing
             avg_img = np.array([np.mean(img[:,:,0]), np.mean(img[:,:,1]), np.mean(img[:,:,2])])
             std_img = np.array([np.std(img[:,:,0]), np.std(img[:,:,1]), np.std(img[:,:,2])])
-            #counter to throw away too many 0 sampels
-            zero_label = 0
             #slide a window across image
             for i in range(wsize2,img.shape[0]-wsize2,stride):
                 for j in range(wsize2,img.shape[1]-wsize2,stride):
-                    #take average of window to be feature vector
-                    R = np.mean(img[i-wsize2:i+wsize2,j-wsize2:j+wsize2,0])
-                    G = np.mean(img[i-wsize2:i+wsize2,j-wsize2:j+wsize2,1])
-                    B = np.mean(img[i-wsize2:i+wsize2,j-wsize2:j+wsize2,2])
-                    feature = np.array([R,G,B])
+                    #take standardized window to be feature vector
+                    R = (img[i-wsize2:i+wsize2+1,j-wsize2:j+wsize2+1,0].reshape(1,-1) - avg_img[0])//std_img[0]
+                    G = (img[i-wsize2:i+wsize2+1,j-wsize2:j+wsize2+1,1].reshape(1,-1) - avg_img[1])//std_img[1]
+                    B = (img[i-wsize2:i+wsize2+1,j-wsize2:j+wsize2+1,2].reshape(1,-1) - avg_img[2])//std_img[2]
+                    feature = np.append(R,[G,B]).reshape(1,-1)
                     #standardize
-                    feature = (feature - avg_img)/std_img
                     label = int(mask[i,j])
-                    if label == 1:
-                        yield feature,label
-                    #throw away every 10 false samples
-                    elif zero_label == 10:
-                        zero_label = 0
-                        yield feature,label
-                    else:
-                        zero_label += 1
+                    one_hot_label = np.zeros([3])
+                    one_hot_label[label] = 1
+                    features.append(feature)
+                    labels.append(one_hot_label)
+            print(filename + ' done!')
+        features = np.array(features)
+        labels = np.array(labels)
+        return features, labels
 
 
