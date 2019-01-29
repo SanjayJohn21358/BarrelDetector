@@ -45,8 +45,8 @@ class BarrelDetector(object):
 		img2[:,:,0] = img2[:,:,0]*mask_img
 		img2[:,:,1] = img2[:,:,1]*mask_img
 		img2[:,:,2] = img2[:,:,2]*mask_img
-		plt.imshow(img2)
-		plt.show()
+		#plt.imshow(img2)
+		#plt.show()
 		return np.uint8(mask_img)
 
 	def get_bounding_box(self, img):
@@ -90,12 +90,12 @@ class BarrelDetector(object):
 		fig,ax = plt.subplots()
 		img2 = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
 		# Display the image
-		ax.imshow(img2)
+		#ax.imshow(img2)
 		# Create a bounding box
 		for i in range(len(boxes)):
 			rect = patches.Rectangle((boxes[i][0], boxes[i][3]), boxes[i][2] - boxes[i][0], boxes[i][1] - boxes[i][3],linewidth=1,edgecolor='r',facecolor='none')
 			ax.add_patch(rect)
-		plt.show()
+		#plt.show()
 
 		return boxes
 
