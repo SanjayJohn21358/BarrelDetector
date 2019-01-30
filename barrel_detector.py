@@ -53,11 +53,11 @@ class BarrelDetector(object):
 		model.bias = np.array([[2.39114614,-2.39114614]])
 		mask_img = model.test(img)
 
-		#open_selem = disk(1)
-		#mask_img = opening(mask_img,selem=open_selem)
+		open_selem = disk(3)
+		mask_img = opening(mask_img,selem=open_selem)
 
-		#selem = disk(10)
-		#mask_img = closing(mask_img,selem=selem)
+		selem = disk(6)
+		mask_img = closing(mask_img,selem=selem)
 
 		#show mask
 		#plt.imshow(mask_img)
@@ -101,7 +101,7 @@ class BarrelDetector(object):
 				ratio = major/minor
 				print(ratio)
 				#make sure area is shaped like barrel (longer than wider)
-				if ratio <= 2.5 and ratio >= 1.5:
+				if ratio <= 2.6 and ratio >= 1.4:
 					#minr, minc, maxr, maxc = reg.bbox
 					#boxes.append([minc,maxr,maxc,minr])
 					y1, x1, y2, x2 = reg.bbox
