@@ -10,6 +10,7 @@ import pickle
 import math
 #comment out data_loader for autograder
 #from data_loader import data_loader
+#comment new
 
 class LR_Model(object):
 
@@ -90,15 +91,12 @@ class LR_Model(object):
 
     '''
     def train(self,dataset):
-        '''
-        '''
-            Train a multi-class classifier with Logistic Regression
+        Train a multi-class classifier with Logistic Regression
             Inputs:
                 training_set - generator for training samples from dataloader class
             Outputs:
                 None
-        '''
-        '''
+
         features,labels = dataset.generate(self.wsize2,self.stride)
         features = features.reshape(-1,(self.wsize**2)*2)
         labels = labels.reshape(-1,2)
