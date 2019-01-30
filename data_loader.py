@@ -149,23 +149,26 @@ class data_loader(object):
         #for each training image, pull out features and labels
         for (index,filename) in enumerate(filenames):
             mask = masks[index]
+            idx = (mask == 2)
+            mask[idx] = 0
             img = cv2.imread(filename)
             #use YCRCB color space
             img = cv2.cvtColor(img, cv2.COLOR_BGR2YCR_CB)
             #to be used for standardizing
             avg_img = np.array([np.mean(img[:,:,0]), np.mean(img[:,:,1]), np.mean(img[:,:,2])])
             std_img = np.array([np.std(img[:,:,0]), np.std(img[:,:,1]), np.std(img[:,:,2])])
+            R = (img[:,:,0] - avg_img[0])/std_img[0]
+            B = (img[:,:,2] - avg_img[2])/std_img[2]
             #slide a window across image
             for i in range(wsize2,img.shape[0]-wsize2,stride):
                 for j in range(wsize2,img.shape[1]-wsize2,stride):
                     #take standardized window to be feature vector
-                    R = (img[i-wsize2:i+wsize2+1,j-wsize2:j+wsize2+1,0].reshape(1,-1) - avg_img[0])//std_img[0]
-                    G = (img[i-wsize2:i+wsize2+1,j-wsize2:j+wsize2+1,1].reshape(1,-1) - avg_img[1])//std_img[1]
-                    B = (img[i-wsize2:i+wsize2+1,j-wsize2:j+wsize2+1,2].reshape(1,-1) - avg_img[2])//std_img[2]
-                    feature = np.append(R,[G,B]).reshape(1,-1)
+                    R_new = R[i-wsize2:i+wsize2+1,j-wsize2:j+wsize2+1].reshape(1,-1)
+                    B_new = B[i-wsize2:i+wsize2+1,j-wsize2:j+wsize2+1].reshape(1,-1)
+                    feature = np.append(R_new,B_new).reshape(1,-1)
                     #standardize
                     label = int(mask[i,j])
-                    one_hot_label = np.zeros([3])
+                    one_hot_label = np.zeros([2])
                     one_hot_label[label] = 1
                     features.append(feature)
                     labels.append(one_hot_label)
