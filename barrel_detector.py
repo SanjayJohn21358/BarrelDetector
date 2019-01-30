@@ -70,8 +70,8 @@ class BarrelDetector(object):
 		boxes = []
 		binary_img = self.segment_image(img)
 		threshold = 0.5
-        mask_img = mask_img >= threshold
-        mask_img = mask_img.astype(int)
+		mask_img = mask_img >= threshold
+		mask_img = mask_img.astype(int)
 		#clean up image
 		#find connected components
 		contours, hierarchy = cv2.findContours(binary_img, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)		
