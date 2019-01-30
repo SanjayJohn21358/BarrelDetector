@@ -83,16 +83,16 @@ class BarrelDetector(object):
 		props = regionprops(binary_img)
 		for reg in props:
 			#make sure area seen is sizable enough
-			if reg.area > 1000:
+			if reg.area > 500:
 				major = reg.major_axis_length
 				minor = reg.minor_axis_length + 0.001
 				#make sure area is shaped like barrel (longer than wider)
-				if major/minor < 2.4 and major/minor > 1.7:
+				if major/minor < 2.6 and major/minor > 1.5:
 					#minr, minc, maxr, maxc = reg.bbox
 					#boxes.append([minc,maxr,maxc,minr])
 					y1, x1, y2, x2 = reg.bbox
 					boxes.append([x1,y1,x2,y2])
-		fig,ax = plt.subplots()
+		#fig,ax = plt.subplots()
 		img2 = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
 		# Display the image
 		#ax.imshow(img2)
@@ -110,6 +110,7 @@ class BarrelDetector(object):
 if __name__ == '__main__':
 	folder = "trainset"
 	my_detector = BarrelDetector()
+	print(os.listdir(folder))
 	for filename in os.listdir(folder):
 		# read one test image
 		img = cv2.imread(os.path.join(folder,filename))
