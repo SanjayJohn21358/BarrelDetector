@@ -163,6 +163,10 @@ class LR_Model(object):
                 #get mask of predictions
                 predictions = self.predict(feature)
                 mask_img[i,j] = predictions[0,1]
+        threshold = 0.3
+        idx = (mask_img >= threshold)
+        mask_img[idx] = 1
+        mask_img = mask_img.astype(int)
         return mask_img
     
     def load(self,weights):

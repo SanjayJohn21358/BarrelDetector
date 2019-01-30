@@ -46,7 +46,6 @@ class BarrelDetector(object):
 		selem = disk(7)
 		open_selem = disk(1)
 		mask_img = opening(mask_img,selem=open_selem)
-		mask_img = opening(mask_img)
 		mask_img = closing(mask_img,selem=selem)
 		#show mask
 		plt.imshow(mask_img)
@@ -69,9 +68,6 @@ class BarrelDetector(object):
 		'''
 		boxes = []
 		binary_img = self.segment_image(img)
-		threshold = 0.5
-		mask_img = mask_img >= threshold
-		mask_img = mask_img.astype(int)
 		#clean up image
 		#find connected components
 		contours, hierarchy = cv2.findContours(binary_img, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)		
@@ -87,6 +83,7 @@ class BarrelDetector(object):
 		for reg in props:
 			y1, x1, y2, x2 = reg.bbox
 			print([x1,y1,x2,y2])
+			print(reg.area)
 			#make sure area seen is sizable enough
 			if reg.area > 1000:
 				major = reg.major_axis_length
@@ -94,7 +91,7 @@ class BarrelDetector(object):
 				ratio = major/minor
 				print(ratio)
 				#make sure area is shaped like barrel (longer than wider)
-				if ratio <= 2.4 and ratio >= 1.7:
+				if ratio <= 2.5 and ratio >= 1.5:
 					#minr, minc, maxr, maxc = reg.bbox
 					#boxes.append([minc,maxr,maxc,minr])
 					y1, x1, y2, x2 = reg.bbox
