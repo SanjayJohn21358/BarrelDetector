@@ -154,7 +154,7 @@ class LR_Model(object):
         B = B.reshape([x,y])
         #slide window, take average of window as feature vector
         for i in range(self.wsize2,x-self.wsize2,2):
-            for j in range(self.wsize2,y-self.wsize2,2):
+            for j in range(self.wsize2,y-self.wsize2):
                 #take standardized window to be feature vector
                 R_new = R[i-self.wsize2:i+self.wsize2+1,j-self.wsize2:j+self.wsize2+1].reshape(1,-1)
                 G_new = G[i-self.wsize2:i+self.wsize2+1,j-self.wsize2:j+self.wsize2+1].reshape(1,-1)
