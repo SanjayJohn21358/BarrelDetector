@@ -33,7 +33,6 @@ class BarrelDetector(object):
 				mask_img - a binary image with 1 if the pixel in the original image is blue and 0 otherwise
 		'''
 		#use model to find blue parts of image
-		img2 = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
 		model = train.LR_Model()
 		#model.load('weights.pickle')
 		model.weights = np.array([[0.004316421032463076, -0.0043164210324630765], [0.0035589924053128887, -0.003558992405312892], [0.002931370840072359, -0.00293137084007236], [0.0040341439089877865, -0.004034143908987793], [0.002772463008034349, -0.0027724630080343433], [0.004780432801345808, -0.004780432801345803], [0.0040784197213062125, -0.004078419721306218], [0.003687565396011121, -0.003687565396011125], [0.003427568403489808, -0.00342756840348981], [0.002342825739991563, -0.0023428257399915648], [0.0012550121123091425, -0.0012550121123091425], [0.0021010545239288345, -0.0021010545239288415], [0.0031727364640076875, -0.003172736464007689], [0.0037429228004955007, -0.003742922800495499], [0.005061349196098476, -0.005061349196098482], [0.0031988692619133157, -0.0031988692619133174], [0.000746732658793382, -0.0007467326587933836], [0.0022041336640427575, -0.0022041336640427588], [0.001153674896242036, -0.0011536748962420373], [0.0007865348845042641, -0.0007865348845042615], [0.0009281625599946279, -0.0009281625599946269], [0.0011311843154352362, -0.0011311843154352364], [0.002490683155119205, -0.002490683155119204], [0.0008104393810992527, -0.0008104393810992546], [0.00011864198567846938, -0.00011864198567846833], [-0.0012164379644071938, 0.0012164379644071927], [9.258448495652363e-06, -9.258448495649588e-06], [0.0010508670276452123, -0.0010508670276452125], [0.0006917727519999498, -0.0006917727519999512], [0.003935353638465439, -0.003935353638465445],
@@ -57,8 +56,8 @@ class BarrelDetector(object):
 		#open_selem = disk(1)
 		#mask_img = opening(mask_img,selem=open_selem)
 
-		selem = disk(10)
-		mask_img = closing(mask_img,selem=selem)
+		#selem = disk(10)
+		#mask_img = closing(mask_img,selem=selem)
 
 		#show mask
 		#plt.imshow(mask_img)
@@ -102,14 +101,14 @@ class BarrelDetector(object):
 				ratio = major/minor
 				print(ratio)
 				#make sure area is shaped like barrel (longer than wider)
-				if ratio <= 2.5 and ratio >= 1.4:
+				if ratio <= 2.5 and ratio >= 1.5:
 					#minr, minc, maxr, maxc = reg.bbox
 					#boxes.append([minc,maxr,maxc,minr])
 					y1, x1, y2, x2 = reg.bbox
 					boxes.append([x1,y1,x2,y2])
 
 		#fig,ax = plt.subplots()
-		img2 = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+		#img2 = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
 		# Display the image
 		'''
 		#ax.imshow(img2)
@@ -125,7 +124,7 @@ class BarrelDetector(object):
 
 
 if __name__ == '__main__':
-	folder = "testset"
+	folder = "trainset"
 	my_detector = BarrelDetector()
 	for filename in os.listdir(folder):
 		# read one test image
@@ -136,7 +135,7 @@ if __name__ == '__main__':
 
 		#Display results:
 		#(1) Segmented images
-		#mask_img = my_detector.segment_image(img)
+		mask_img = my_detector.segment_image(img)
 		#(2) Barrel bounding box		
 		boxes = my_detector.get_bounding_box(img)
 		#The autograder checks your answers to the functions segment_image() and get_bounding_box()
