@@ -88,17 +88,21 @@ class BarrelDetector(object):
 				minor = reg.minor_axis_length + 0.001
 				#make sure area is shaped like barrel (longer than wider)
 				if major/minor < 2.4 and major/minor > 1.7:
-					minr, minc, maxr, maxc = reg.bbox
-					boxes.append([minc,maxr,maxc,minr])
+					#minr, minc, maxr, maxc = reg.bbox
+					#boxes.append([minc,maxr,maxc,minr])
+					y1, x1, y2, x2 = reg.bbox
+					boxes.append([x1,y1,x2,y2])
 		fig,ax = plt.subplots()
 		img2 = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
 		# Display the image
-		ax.imshow(img2)
+		#ax.imshow(img2)
 		# Create a bounding box
+		'''
 		for i in range(len(boxes)):
-			rect = patches.Rectangle((boxes[i][0], boxes[i][3]), boxes[i][2] - boxes[i][0], boxes[i][1] - boxes[i][3],linewidth=1,edgecolor='r',facecolor='none')
+			rect = patches.Rectangle((boxes[i][1], boxes[i][3]), boxes[i][2] - boxes[i][0], boxes[i][1] - boxes[i][3],linewidth=1,edgecolor='r',facecolor='none')
 			ax.add_patch(rect)
 		plt.show()
+		'''
 
 		return boxes
 
