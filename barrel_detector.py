@@ -45,7 +45,7 @@ class BarrelDetector(object):
 		mask_img = model.test(img)
 		selem = disk(7)
 		mask_img = closing(mask_img,selem=selem)
-		open_selem = disk(2)
+		open_selem = disk(5)
 		mask_img = opening(mask_img,selem=open_selem)
 		#show mask
 		plt.imshow(mask_img)
@@ -81,7 +81,6 @@ class BarrelDetector(object):
 		#find apply shape statistic to include or exclude as barrel
 		props = regionprops(binary_img)
 		for reg in props:
-			y1, x1, y2, x2 = reg.bbox
 			#make sure area seen is sizable enough
 			if reg.area > 800:
 				major = reg.major_axis_length
