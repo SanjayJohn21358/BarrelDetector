@@ -146,20 +146,26 @@ class LR_Model(object):
         std_img = np.array([np.std(img[:,:,0]), np.std(img[:,:,1]), np.std(img[:,:,2])])
         [x,y,z] = img.shape
         mask_img = np.zeros([x,y])
+        R = (img[:,:,0].reshape(1,-1) - avg_img[0])//std_img[0]
+        R = R.reshape([x,y])
+        G = (img[:,:,1].reshape(1,-1) - avg_img[1])//std_img[1]
+        G = G.reshape([x,y])
+        B = (img[:,:,2].reshape(1,-1) - avg_img[2])//std_img[2]
+        B = B.reshape([x,y])
         #slide window, take average of window as feature vector
-        for i in range(self.wsize2,img.shape[0]-self.wsize2):
-            for j in range(self.wsize2,img.shape[1]-self.wsize2):
+        for i in range(self.wsize2,x-self.wsize2):
+            for j in range(self.wsize2,y-self.wsize2):
                 #take standardized window to be feature vector
-                R = (img[i-self.wsize2:i+self.wsize2+1,j-self.wsize2:j+self.wsize2+1,0].reshape(1,-1) - avg_img[0])//std_img[0]
-                G = (img[i-self.wsize2:i+self.wsize2+1,j-self.wsize2:j+self.wsize2+1,1].reshape(1,-1) - avg_img[1])//std_img[1]
-                B = (img[i-self.wsize2:i+self.wsize2+1,j-self.wsize2:j+self.wsize2+1,2].reshape(1,-1) - avg_img[2])//std_img[2]
-                feature = np.append(R,[G,B]).reshape(1,-1)
+                R_new = R[i-self.wsize2:i+self.wsize2+1,j-self.wsize2:j+self.wsize2+1].reshape(1,-1)
+                G_new = G[i-self.wsize2:i+self.wsize2+1,j-self.wsize2:j+self.wsize2+1].reshape(1,-1)
+                B_new = B[i-self.wsize2:i+self.wsize2+1,j-self.wsize2:j+self.wsize2+1].reshape(1,-1)
+                feature = np.append(R_new,[G_new,B_new]).reshape(1,-1)
                 #get mask of predictions
                 predictions = self.predict(feature)
                 mask_img[i,j] = predictions[0,1]
-        threshold = 0.95
-        idx = mask_img[:,:] > threshold
-        mask_img[idx] = threshold
+        threshold = 0.70
+        idx = mask_img > threshold
+        mask_img[idx] = 1
         mask_img = mask_img.astype(int)
         return mask_img
     
