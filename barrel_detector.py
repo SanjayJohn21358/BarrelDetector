@@ -109,7 +109,8 @@ class BarrelDetector(object):
 						boxes.append([x1-9,y1+6,x2+9,y2+6])
 						boxes.sort(key=itemgetter(1))
 
-		boxes = boxes[:2]
+		if len(boxes) > 1:
+			boxes = boxes[:2]
 		return boxes
 		
 
