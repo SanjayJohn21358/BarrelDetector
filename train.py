@@ -96,11 +96,9 @@ class LR_Model(object):
                 training_set - generator for training samples from dataloader class
             Outputs:
                 None
-
         features,labels = dataset.generate(self.wsize2,self.stride)
         features = features.reshape(-1,(self.wsize**2)*2)
         labels = labels.reshape(-1,2)
-
         #make validation set
         N = len(features)
         split = int(N*0.9)
@@ -110,7 +108,6 @@ class LR_Model(object):
         labels = labels[:split,:]
         previous_cost = 1000
         new_cost = 0
-
         print('Created training set!')
         for i in range(1,self.iters):
             #update weights
@@ -122,7 +119,6 @@ class LR_Model(object):
                 self.cost_log.append(cost+0.0)
             print("iter: "+str(i) + " cost: "+str(cost))
             #validate
-
             prediction = self.predict(validation_features)
             new_cost = self.cost_function(prediction,validation_labels)
             if new_cost < previous_cost:
@@ -157,10 +153,10 @@ class LR_Model(object):
                 #get mask of predictions
                 predictions = self.predict(feature)
                 mask_img[i,j] = predictions[0,1]
+
         threshold = 0.5
         idx = (mask_img >= threshold)
-        mask_img[idx] = 1
-        mask_img = mask_img.astype(int)
+        mask_img = idx.astype(int)
         return mask_img
     
     def load(self,weights):
