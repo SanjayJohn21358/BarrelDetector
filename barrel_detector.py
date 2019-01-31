@@ -108,7 +108,7 @@ class BarrelDetector(object):
 						y1, x1, y2, x2 = reg.bbox
 						boxes.append([x1-7,y1+5,x2+7,y2+5,ratio])
 						boxes.sort(key=itemgetter(4))
-						boxes.sort(key=itemgetter(1)
+						boxes.sort(key=itemgetter(1))
 						boxes = [boxes[i] for i in range(1)]
 
 
