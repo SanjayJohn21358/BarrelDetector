@@ -72,41 +72,48 @@ class BarrelDetector(object):
 			Our solution uses xy-coordinate instead of rc-coordinate. More information: http://scikit-image.org/docs/dev/user_guide/numpy_images.html#coordinate-conventions
 		'''
 		boxes = []
-		
+		threshold = 0.65
 		binary_img = self.segment_image(img)
-		mean_b = np.mean(binary_img,dtype=float)
-		std_b = np.std(binary_img,dtype=float)
-		threshold = 0.65 + 0.08*np.log(mean_b/std_b)
-		idx = (binary_img >= threshold)
-		binary_img = np.uint8(idx)
-		selem = disk(10)
-		binary_img = closing(binary_img,selem=selem)
-		#clean up image
-		#find connected components
-		contours, hierarchy = cv2.findContours(binary_img, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)		
-        #iterate through all the top-level contours,
-		#draw each connected component with its own random color
-		for idx in range(len(contours)):
-			color = 255*np.random.random([3])
-			cv2.drawContours(binary_img, contours, idx, color, -1 )
-		
-		#go through each region
-		#find apply shape statistic to include or exclude as barrel
-		props = regionprops(binary_img)
-		for reg in props:
-			print(reg.area)
-			#make sure area seen is sizable enough
-			if reg.area > 400:
-				major = reg.major_axis_length
-				minor = reg.minor_axis_length + 0.001
-				ratio = major/minor
-				print(ratio)
-				#make sure area is shaped like barrel (longer than wider)
-				if ratio <= 4.2 and ratio >= 1.1:
-					y1, x1, y2, x2 = reg.bbox
-					boxes.append([x1-7,y1+5,x2+7,y2+5])
-					sorted(boxes, key=itemgetter(1))
+		binary_img_cp = np.copy(binary_img)
+		mean_b = np.mean(binary_img_cp,dtype=float)
+		std_b = np.std(binary_img_cp,dtype=float)
+		while not boxes:
+			threshold = threshold + 0.08*np.log(mean_b/std_b)
+			idx = (binary_img_cp >= threshold)
+			binary_img = np.uint8(idx)
+			selem = disk(10)
+			binary_img = closing(binary_img,selem=selem)
+			#clean up image
+			#find connected components
+			contours, hierarchy = cv2.findContours(binary_img, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)		
+			#iterate through all the top-level contours,
+			#draw each connected component with its own random color
+			for idx in range(len(contours)):
+				color = 255*np.random.random([3])
+				cv2.drawContours(binary_img, contours, idx, color, -1 )
+			
+			#go through each region
+			#find apply shape statistic to include or exclude as barrel
+			props = regionprops(binary_img)
+			for reg in props:
+				print(reg.area)
+				#make sure area seen is sizable enough
+				if reg.area > 400:
+					major = reg.major_axis_length
+					minor = reg.minor_axis_length + 0.001
+					ratio = major/minor
+					print(ratio)
+					#make sure area is shaped like barrel (longer than wider)
+					if ratio <= 4.2 and ratio >= 1.1:
+						y1, x1, y2, x2 = reg.bbox
+						boxes.append([x1-7,y1+5,x2+7,y2+5,ratio])
+						boxes.sort(key=itemgetter(4))
+						boxes.sort(key=itemgetter(1)
+						boxes = [boxes[i] for i in range(1)]
+
+
 		return boxes
+		
 
 
 if __name__ == '__main__':
