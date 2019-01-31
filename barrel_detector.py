@@ -74,7 +74,7 @@ class BarrelDetector(object):
 		'''
 		boxes = []
 		binary_img = self.segment_image(img)
-		threshold = 0.5
+		threshold = 0.65
 		idx = (binary_img >= threshold)
 		binary_img = np.uint8(idx)
 		#clean up image
