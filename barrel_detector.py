@@ -76,11 +76,11 @@ class BarrelDetector(object):
 		binary_img = self.segment_image(img)
 		mean_b = np.mean(binary_img,dtype=float)
 		std_b = np.std(binary_img,dtype=float)
-		threshold = 0.65 + 0.02*np.log(mean_b/std_b)
+		threshold = 0.65 + 0.08*np.log(mean_b/std_b)
 		idx = (binary_img >= threshold)
 		binary_img = np.uint8(idx)
-		#selem = disk(10)
-		#mask_img = closing(binary_img,selem=selem)
+		selem = disk(10)
+		binary_img = closing(binary_img,selem=selem)
 		#clean up image
 		#find connected components
 		contours, hierarchy = cv2.findContours(binary_img, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)		
