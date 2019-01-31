@@ -53,8 +53,8 @@ class BarrelDetector(object):
 		model.bias = np.array([[2.39114614,-2.39114614]])
 		mask_img = model.test(img)
 
-		selem = disk(8)
-		mask_img = closing(mask_img,selem=selem)
+		#selem = disk(8)
+		#mask_img = closing(mask_img,selem=selem)
 
 		return np.uint8(mask_img)
 
