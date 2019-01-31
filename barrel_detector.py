@@ -53,8 +53,6 @@ class BarrelDetector(object):
 		model.bias = np.array([[2.39114614,-2.39114614]])
 		mask_img = model.test(img)
 
-		#selem = disk(10)
-		#mask_img = closing(mask_img,selem=selem)
 
 		return mask_img
 
@@ -73,10 +71,13 @@ class BarrelDetector(object):
 			Our solution uses xy-coordinate instead of rc-coordinate. More information: http://scikit-image.org/docs/dev/user_guide/numpy_images.html#coordinate-conventions
 		'''
 		boxes = []
+		
 		binary_img = self.segment_image(img)
 		threshold = 0.65
 		idx = (binary_img >= threshold)
 		binary_img = np.uint8(idx)
+		selem = disk(10)
+		mask_img = closing(binary_img,selem=selem)
 		#clean up image
 		#find connected components
 		contours, hierarchy = cv2.findContours(binary_img, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)		
@@ -98,7 +99,7 @@ class BarrelDetector(object):
 				ratio = major/minor
 				print(ratio)
 				#make sure area is shaped like barrel (longer than wider)
-				if ratio <= 2.5 and ratio >= 1.5:
+				if ratio <= 4.2 and ratio >= 1.1:
 					y1, x1, y2, x2 = reg.bbox
 					boxes.append([x1,y1,x2,y2])
 
