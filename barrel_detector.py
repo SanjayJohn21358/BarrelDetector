@@ -13,6 +13,7 @@ import matplotlib.patches as patches
 import numpy as np
 import math
 import train
+from operator import itemgetter
 
 class BarrelDetector(object):
 	def __init__(self):
