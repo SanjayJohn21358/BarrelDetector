@@ -53,10 +53,10 @@ class BarrelDetector(object):
 		model.bias = np.array([[2.39114614,-2.39114614]])
 		mask_img = model.test(img)
 
-		selem = disk(15)
-		mask_img = closing(mask_img,selem=selem)
+		#selem = disk(10)
+		#mask_img = closing(mask_img,selem=selem)
 
-		return np.uint8(mask_img)
+		return mask_img
 
 	def get_bounding_box(self, img):
 		'''
@@ -75,8 +75,8 @@ class BarrelDetector(object):
 		boxes = []
 		binary_img = self.segment_image(img)
 		threshold = 0.5
-		idx = (binary_img >= threshold)
-		binary_img = idx.astype(int)
+        idx = (binary_img >= threshold)
+        binary_img = np.uint8(idx)
 		#clean up image
 		#find connected components
 		contours, hierarchy = cv2.findContours(binary_img, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)		
