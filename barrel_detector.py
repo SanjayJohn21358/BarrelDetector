@@ -76,8 +76,8 @@ class BarrelDetector(object):
 		threshold = 0.65
 		idx = (binary_img >= threshold)
 		binary_img = np.uint8(idx)
-		selem = disk(10)
-		mask_img = closing(binary_img,selem=selem)
+		#selem = disk(10)
+		#mask_img = closing(binary_img,selem=selem)
 		#clean up image
 		#find connected components
 		contours, hierarchy = cv2.findContours(binary_img, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)		
