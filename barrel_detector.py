@@ -78,7 +78,7 @@ class BarrelDetector(object):
 		mean_b = np.mean(binary_img_cp,dtype=float)
 		std_b = np.std(binary_img_cp,dtype=float)
 		while not boxes:
-			threshold = threshold + 0.12*np.log(mean_b/std_b)
+			threshold = threshold + 0.09*np.log(mean_b/std_b)
 			idx = (binary_img_cp >= threshold)
 			binary_img = np.uint8(idx)
 			selem = disk(10)
