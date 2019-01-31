@@ -78,7 +78,7 @@ class BarrelDetector(object):
 		mean_b = np.mean(binary_img_cp,dtype=float)
 		std_b = np.std(binary_img_cp,dtype=float)
 		while not boxes:
-			threshold = threshold + 0.09*np.log(mean_b/std_b)
+			threshold = threshold + 0.08*np.log(mean_b/std_b)
 			idx = (binary_img_cp >= threshold)
 			binary_img = np.uint8(idx)
 			selem = disk(10)
@@ -106,7 +106,7 @@ class BarrelDetector(object):
 					#make sure area is shaped like barrel (longer than wider)
 					if ratio <= 4.2 and ratio >= 1.1:
 						y1, x1, y2, x2 = reg.bbox
-						boxes.append([x1-9,y1+6,x2+9,y2+6])
+						boxes.append([x1-7,y1+5,x2+7,y2+5])
 						boxes.sort(key=itemgetter(1))
 
 		if len(boxes) > 1:
