@@ -8,6 +8,7 @@ import cv2
 from skimage.measure import label, regionprops
 from skimage import data, util, img_as_ubyte
 from skimage.morphology import erosion, dilation, opening, closing, disk
+from sklearn.feature_extraction import image
 from matplotlib import pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
@@ -73,6 +74,9 @@ class BarrelDetector(object):
 		boxes = []
 		
 		binary_img = self.segment_image(img)
+		#std_b = np.std(binary_img)
+		#mean_b = np.mean(binary_img)
+		#(0.65 - mean_b)/std_b
 		threshold = 0.65
 		idx = (binary_img >= threshold)
 		binary_img = np.uint8(idx)
@@ -101,8 +105,8 @@ class BarrelDetector(object):
 				#make sure area is shaped like barrel (longer than wider)
 				if ratio <= 4.2 and ratio >= 1.1:
 					y1, x1, y2, x2 = reg.bbox
-					boxes.append([x1,y1,x2,y2])
-
+					boxes.append([x1-5,y1+3,x2+5,y2+3])
+					sorted(boxes, key=itemgetter(1))
 		return boxes
 
 
