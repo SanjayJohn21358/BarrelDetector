@@ -106,8 +106,8 @@ class BarrelDetector(object):
 					#make sure area is shaped like barrel (longer than wider)
 					if ratio <= 4.2 and ratio >= 1.1:
 						y1, x1, y2, x2 = reg.bbox
-						boxes.append([x1-7,y1+5,x2+7,y2+5])
-						boxes.sort(key=itemgetter(1))
+						boxes.append([x1-6,y1+4,x2+6,y2-4])
+						boxes.sort(key=itemgetter(0))
 
 		if len(boxes) > 1:
 			boxes = boxes[:2]
